@@ -22,7 +22,11 @@ const Sidebar = ({ isOpen, onClose, activeId }) => {
   const deleteMutation = useDeleteConversationMutation();
 
   const handleNewChat = () => {
-    router.push('/chat');
+    if (router.asPath === '/chat' || router.pathname === '/chat') {
+      router.reload();
+    } else {
+      router.push('/chat');
+    }
     if (onClose) onClose();
   };
 

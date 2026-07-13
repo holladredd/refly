@@ -1,6 +1,6 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import ChatContainer from '@/components/chat/ChatContainer';
+import React from "react";
+import { useRouter } from "next/router";
+import ChatContainer from "@/components/chat/ChatContainer";
 
 export default function ActiveChatPage() {
   const router = useRouter();
@@ -15,5 +15,5 @@ export default function ActiveChatPage() {
     );
   }
 
-  return <ChatContainer conversationId={id} />;
+  return <ChatContainer conversationId={id} key={id} />;
 }
