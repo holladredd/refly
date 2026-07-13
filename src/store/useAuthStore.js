@@ -18,10 +18,21 @@ const useAuthStore = create((set) => ({
       return true;
     } catch (error) {
       set({ isLoading: false });
+      console.error("Login Error Details:", error);
+      
+      let errorMsg = 'An error occurred during login.';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.message === 'Network Error') {
+        errorMsg = 'Network Error. This is usually caused by CORS (check if FRONTEND_URL matches your live UI domain exactly, without a trailing slash) or the backend server is down.';
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
-        text: error.response?.data?.message || 'An error occurred during login',
+        text: errorMsg,
       });
       return false;
     }
@@ -36,10 +47,21 @@ const useAuthStore = create((set) => ({
       return true;
     } catch (error) {
       set({ isLoading: false });
+      console.error("Registration Error Details:", error);
+
+      let errorMsg = 'An error occurred during registration.';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.message === 'Network Error') {
+        errorMsg = 'Network Error. This is usually caused by CORS issues or the backend server being unreachable.';
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+
       Swal.fire({
         icon: 'error',
         title: 'Registration Failed',
-        text: error.response?.data?.message || 'An error occurred during registration',
+        text: errorMsg,
       });
       return false;
     }
