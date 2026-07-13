@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-gray-900 text-white font-sans overflow-hidden">
       <Head>
-        <title>Refly (Scout) - Creator Research AI</title>
+        <title>Refly - Creator Research AI</title>
         <meta name="description" content="AI-powered creator research platform" />
       </Head>
 
@@ -24,7 +24,7 @@ export default function Home() {
       
       <div className="flex-1 flex flex-col min-w-0">
         <header className="md:hidden flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700">
-          <h1 className="font-bold text-lg tracking-wide text-white">Scout</h1>
+          <h1 className="font-bold text-lg tracking-wide text-white">Refly</h1>
           <button className="text-gray-300 p-2">Menu</button>
         </header>
 

@@ -27,7 +27,7 @@ const ChatInput = () => {
           <input
             type="text"
             className="w-full bg-gray-700 text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-14 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-600 shadow-sm"
-            placeholder="Ask Scout to find resources or ideas..."
+            placeholder="Ask Refly to find resources or ideas..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
@@ -45,7 +45,7 @@ const ChatInput = () => {
           </button>
         </form>
         <div className="text-center mt-2">
-          <p className="text-xs text-gray-500">Scout can make mistakes. Consider verifying important information.</p>
+          <p className="text-xs text-gray-500">Refly can make mistakes. Consider verifying important information.</p>
         </div>
       </div>
     </div>
