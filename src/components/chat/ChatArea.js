@@ -1,21 +1,27 @@
-import React, { useRef, useEffect } from 'react';
-import MediaCard from './MediaCard';
-import { FiCpu, FiMessageSquare, FiTrendingUp } from 'react-icons/fi';
-import Image from 'next/image';
+import React, { useRef, useEffect } from "react";
+import MediaCard from "./MediaCard";
+import { FiCpu, FiMessageSquare, FiTrendingUp } from "react-icons/fi";
+import Image from "next/image";
 
-const ChatArea = ({ messages = [], isLoading, activeModel, onModelChange, onSuggestionClick }) => {
+const ChatArea = ({
+  messages = [],
+  isLoading,
+  activeModel,
+  onModelChange,
+  onSuggestionClick,
+}) => {
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const suggestions = [
-    'Cinematic drone footage of Lagos night view',
-    'Historical photos of ancient Egyptian structures',
-    'Traditional African ambient instrumental music',
-    'Close up slow motion shots of wild lions'
+    "Cinematic drone footage of Lagos night view",
+    "Historical photos of ancient Egyptian structures",
+    "Traditional African ambient instrumental music",
+    "Close up slow motion shots of wild lions",
   ];
 
   if (isLoading) {
@@ -40,43 +46,13 @@ const ChatArea = ({ messages = [], isLoading, activeModel, onModelChange, onSugg
               height={72}
               className="rounded-2xl shadow-xl shadow-blue-500/5 object-contain"
             />
-            <h2 className="text-3xl font-extrabold tracking-tight">What are we researching today?</h2>
+            <h2 className="text-3xl font-extrabold tracking-tight">
+              What are we researching today?
+            </h2>
             <p className="text-gray-400 max-w-md">
-              Scout stock videos, high-resolution images, and audio tracks with AI.
+              Scout stock videos, high-resolution images, and audio tracks with
+              AI.
             </p>
-          </div>
-
-          {/* Model Selection Cards */}
-          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-            <button
-              onClick={() => onModelChange('gpt')}
-              className={`p-4 rounded-xl border text-left flex items-start gap-3 transition-all ${
-                activeModel === 'gpt'
-                  ? 'bg-blue-600/10 border-blue-500 text-white shadow-lg shadow-blue-500/5'
-                  : 'bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-700 hover:text-gray-200'
-              }`}
-            >
-              <FiCpu className={`text-xl mt-0.5 ${activeModel === 'gpt' ? 'text-blue-400' : 'text-gray-500'}`} />
-              <div>
-                <p className="font-semibold text-sm">OpenAI GPT</p>
-                <p className="text-xs text-gray-500 mt-0.5">Logical, great for outlines & media matching.</p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => onModelChange('grok')}
-              className={`p-4 rounded-xl border text-left flex items-start gap-3 transition-all ${
-                activeModel === 'grok'
-                  ? 'bg-purple-600/10 border-purple-500 text-white shadow-lg shadow-purple-500/5'
-                  : 'bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-700 hover:text-gray-200'
-              }`}
-            >
-              <FiCpu className={`text-xl mt-0.5 ${activeModel === 'grok' ? 'text-purple-400' : 'text-gray-500'}`} />
-              <div>
-                <p className="font-semibold text-sm">Grok AI</p>
-                <p className="text-xs text-gray-500 mt-0.5">Creative, witty, excellent style suggestions.</p>
-              </div>
-            </button>
           </div>
 
           {/* Suggestions */}
@@ -106,29 +82,46 @@ const ChatArea = ({ messages = [], isLoading, activeModel, onModelChange, onSugg
     <div className="flex-1 overflow-y-auto bg-gray-900 p-4 md:p-8 text-gray-200">
       <div className="max-w-3xl mx-auto space-y-8">
         {messages.map((msg) => {
-          const isUser = msg.role === 'user';
+          const isUser = msg.role === "user";
           return (
-            <div key={msg._id} className="flex gap-4">
+            <div
+              key={msg._id}
+              className={`flex gap-3 w-full items-start ${isUser ? "flex-row-reverse" : "flex-row"}`}
+            >
+              {/* Avatar */}
               <div
-                className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center font-bold text-sm text-white ${
+                className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center font-bold text-xs text-white shadow-sm ${
                   isUser
-                    ? 'bg-gradient-to-tr from-blue-600 to-indigo-600'
-                    : 'bg-gradient-to-tr from-emerald-600 to-teal-600'
+                    ? "bg-gradient-to-tr from-blue-600 to-indigo-600"
+                    : "bg-gradient-to-tr from-emerald-600 to-teal-600"
                 }`}
               >
-                {isUser ? 'U' : 'AI'}
+                {isUser ? "U" : "AI"}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold mb-1 text-gray-300 text-sm">
-                  {isUser ? 'You' : 'Refly'}
-                </p>
-                <div className="text-gray-300 leading-relaxed text-sm whitespace-pre-wrap">
+
+              {/* Message Bubble Container */}
+              <div
+                className={`flex flex-col max-w-[75%] ${isUser ? "items-end" : "items-start"}`}
+              >
+                {/* Username */}
+                <span className="text-xs text-gray-500 mb-1 px-1">
+                  {isUser ? "You" : "Refly"}
+                </span>
+
+                {/* Bubble Body */}
+                <div
+                  className={`p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap border ${
+                    isUser
+                      ? "bg-blue-600/15 border-blue-500/25 text-blue-50 rounded-tr-none shadow-md shadow-blue-500/5"
+                      : "bg-gray-950/80 border-gray-800/80 text-gray-200 rounded-tl-none shadow-sm"
+                  }`}
+                >
                   {msg.content}
                 </div>
 
-                {/* Display Media Cards if any are present in the message */}
+                {/* Media Cards (only for AI assistant responses) */}
                 {msg.mediaResults && msg.mediaResults.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 w-full">
                     {msg.mediaResults.map((item, idx) => (
                       <MediaCard key={idx} media={item} />
                     ))}

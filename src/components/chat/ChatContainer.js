@@ -12,9 +12,9 @@ import Swal from 'sweetalert2';
 
 export default function ChatContainer({ conversationId }) {
   const router = useRouter();
-  const { user, isCheckingAuth } = useAuthStore();
+  const { user, isLoading } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeModel, setActiveModel] = useState('gpt');
+  const [activeModel, setActiveModel] = useState('grok');
 
   const {
     useConversationMessages,
@@ -26,10 +26,10 @@ export default function ChatContainer({ conversationId }) {
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!isCheckingAuth && !user) {
+    if (!isLoading && !user) {
       router.push('/login');
     }
-  }, [user, isCheckingAuth, router]);
+  }, [user, isLoading, router]);
 
   // Sync activeModel state with conversation properties once loaded
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function ChatContainer({ conversationId }) {
     handleSendMessage(prompt);
   };
 
-  if (isCheckingAuth || !user) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center text-gray-400">
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -79,9 +79,7 @@ export default function ChatContainer({ conversationId }) {
     );
   }
 
-  const modelPlaceholder = activeModel === 'grok' 
-    ? 'Ask Grok AI (wit & style suggestions)...' 
-    : 'Ask OpenAI GPT (logical research & matching)...';
+  const modelPlaceholder = 'Ask Grok AI to find references or ideas...';
 
   return (
     <div className="flex h-screen bg-gray-950 text-white font-sans overflow-hidden">
