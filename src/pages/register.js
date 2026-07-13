@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import useAuthStore from '../store/useAuthStore';
 import { FiMail, FiLock, FiUser } from 'react-icons/fi';
@@ -28,6 +29,9 @@ export default function Register() {
 
       <div className="w-full max-w-md bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-700">
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <Image src="/logo.png" alt="Refly Logo" width={56} height={56} className="rounded-xl object-contain" />
+          </div>
           <h1 className="text-3xl font-bold mb-2">Create an Account</h1>
           <p className="text-gray-400">Join Refly to start researching</p>
         </div>
