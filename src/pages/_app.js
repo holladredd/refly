@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useAuthStore from "@/store/useAuthStore";
 import { ChatProvider } from "@/context/ChatContext";
+import ErrorBoundary from "@/components/layout/ErrorBoundary";
 
 export default function App({ Component, pageProps }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -23,7 +24,9 @@ export default function App({ Component, pageProps }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ChatProvider>
-        <Component {...pageProps} />
+        <ErrorBoundary>
+          <Component {...pageProps} />
+        </ErrorBoundary>
       </ChatProvider>
     </QueryClientProvider>
   );
