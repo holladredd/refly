@@ -27,7 +27,7 @@ const ChatInput = ({
   const currentModel = MODELS.find((m) => m.value === activeModel) || MODELS[0];
 
   return (
-    <div className="bg-gray-900 p-4 border-t border-gray-800">
+    <div className="bg-gray-900 p-2 sm:p-4 border-t border-gray-800">
       <div className="max-w-3xl mx-auto">
         {/* Input Box */}
         <form
@@ -93,7 +93,7 @@ const ChatInput = ({
                 <FiChevronDown className="absolute right-0 text-blue-400 text-xs pointer-events-none" />
               </div>
               {/* Active model pill badge */}
-              <span className="ml-1 px-1.5 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-[9px] font-bold tracking-wide">
+              <span className="ml-1 px-1.5 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-[9px] font-bold tracking-wide hidden sm:inline-block">
                 {currentModel.label} {currentModel.badge}
               </span>
             </div>

@@ -16,11 +16,12 @@ export default function ChatContainer({ conversationId }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeModel, setActiveModel] = useState("grok-4.3");
 
-  const { useConversationMessages, useSendMessageMutation } = useChat();
+  const { useConversationMessages, useSendMessageMutation, useEditMessageMutation } = useChat();
 
   const { data: messages = [], isLoading: isLoadingMessages } =
     useConversationMessages(conversationId);
   const sendMessageMutation = useSendMessageMutation();
+  const editMessageMutation = useEditMessageMutation();
 
   // Redirect if not logged in
   useEffect(() => {
@@ -69,6 +70,29 @@ export default function ChatContainer({ conversationId }) {
     handleSendMessage(prompt);
   };
 
+  const handleEditMessage = (messageId, newContent) => {
+    editMessageMutation.mutate(
+      {
+        conversationId,
+        messageId,
+        content: newContent,
+        model: activeModel,
+      },
+      {
+        onError: (error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: error.response?.data?.message || "Failed to edit message.",
+            background: "#1f2937",
+            color: "#f3f4f6",
+            confirmButtonColor: "#3b82f6",
+          });
+        },
+      }
+    );
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center text-gray-400">
@@ -80,7 +104,7 @@ export default function ChatContainer({ conversationId }) {
   const modelPlaceholder = "Ask Grok AI to find references or ideas...";
 
   return (
-    <div className="flex h-screen bg-gray-950 text-white font-sans overflow-hidden">
+    <div className="flex h-[100dvh] w-full bg-gray-950 text-white font-sans overflow-hidden">
       <Head>
         <title>Refly - Chat Workspace</title>
       </Head>
@@ -133,6 +157,7 @@ export default function ChatContainer({ conversationId }) {
           activeModel={activeModel}
           onModelChange={setActiveModel}
           onSuggestionClick={handleSuggestionClick}
+          onEditMessage={handleEditMessage}
         />
 
         {/* Input Bar */}

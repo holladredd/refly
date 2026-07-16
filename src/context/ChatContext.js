@@ -98,6 +98,71 @@ export function ChatProvider({ children }) {
     });
   };
 
+  // 4b. Edit/Resend message mutation
+  const useEditMessageMutation = () => {
+    return useMutation({
+      mutationFn: async ({ conversationId, messageId, content, model }) => {
+        const { data } = await api.post('/chat/edit', {
+          conversationId,
+          messageId,
+          content,
+          model,
+        });
+        return data;
+      },
+      onMutate: async (newEdit) => {
+        await queryClient.cancelQueries({ queryKey: ['messages', newEdit.conversationId] });
+        const previousMessages = queryClient.getQueryData(['messages', newEdit.conversationId]);
+
+        if (previousMessages) {
+          const targetIndex = previousMessages.findIndex((m) => m._id === newEdit.messageId);
+          if (targetIndex !== -1) {
+            const updatedMessages = previousMessages.slice(0, targetIndex);
+            
+            const tempMessage = {
+              _id: `temp-edit-${Date.now()}`,
+              conversationId: newEdit.conversationId,
+              role: 'user',
+              content: newEdit.content,
+              createdAt: new Date().toISOString(),
+            };
+            
+            const tempAiMessage = {
+              _id: `temp-ai-${Date.now()}`,
+              conversationId: newEdit.conversationId,
+              role: 'assistant',
+              content: '',
+              createdAt: new Date().toISOString(),
+              isLoading: true,
+            };
+
+            queryClient.setQueryData(
+              ['messages', newEdit.conversationId],
+              [...updatedMessages, tempMessage, tempAiMessage]
+            );
+          }
+        }
+        return { previousMessages, conversationId: newEdit.conversationId };
+      },
+      onError: (err, newEdit, context) => {
+        if (context?.previousMessages) {
+          queryClient.setQueryData(
+            ['messages', context.conversationId],
+            context.previousMessages
+          );
+        }
+      },
+      onSuccess: (data, variables, context) => {
+        queryClient.setQueryData(['messages', context.conversationId], (old = []) => {
+          const filtered = old.filter((msg) => !msg._id.toString().startsWith('temp-'));
+          return [...filtered, data.userMessage, data.assistantMessage];
+        });
+        queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      },
+    });
+  };
+
+
   // 5. Rename a conversation mutation
   const useRenameConversationMutation = () => {
     return useMutation({
@@ -163,6 +228,7 @@ export function ChatProvider({ children }) {
     useConversationMessages,
     useCreateConversationMutation,
     useSendMessageMutation,
+    useEditMessageMutation,
     useRenameConversationMutation,
     useDeleteConversationMutation,
   };
