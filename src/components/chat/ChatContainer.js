@@ -1,33 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Head from 'next/head';
-import Image from 'next/image';
-import useAuthStore from '@/store/useAuthStore';
-import { useChat } from '@/context/ChatContext';
-import Sidebar from '../layout/Sidebar';
-import ChatArea from './ChatArea';
-import ChatInput from './ChatInput';
-import { RiMenuLine } from 'react-icons/ri';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Head from "next/head";
+import Image from "next/image";
+import useAuthStore from "@/store/useAuthStore";
+import { useChat } from "@/context/ChatContext";
+import Sidebar from "../layout/Sidebar";
+import ChatArea from "./ChatArea";
+import ChatInput from "./ChatInput";
+import { RiMenuLine } from "react-icons/ri";
+import Swal from "sweetalert2";
 
 export default function ChatContainer({ conversationId }) {
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeModel, setActiveModel] = useState('grok');
+  const [activeModel, setActiveModel] = useState("grok-2-1212");
 
-  const {
-    useConversationMessages,
-    useSendMessageMutation,
-  } = useChat();
+  const { useConversationMessages, useSendMessageMutation } = useChat();
 
-  const { data: messages = [], isLoading: isLoadingMessages } = useConversationMessages(conversationId);
+  const { data: messages = [], isLoading: isLoadingMessages } =
+    useConversationMessages(conversationId);
   const sendMessageMutation = useSendMessageMutation();
 
   // Redirect if not logged in
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, isLoading, router]);
 
@@ -55,15 +53,15 @@ export default function ChatContainer({ conversationId }) {
         },
         onError: (error) => {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: error.response?.data?.message || 'Failed to send message.',
-            background: '#1f2937',
-            color: '#f3f4f6',
-            confirmButtonColor: '#3b82f6',
+            icon: "error",
+            title: "Oops...",
+            text: error.response?.data?.message || "Failed to send message.",
+            background: "#1f2937",
+            color: "#f3f4f6",
+            confirmButtonColor: "#3b82f6",
           });
         },
-      }
+      },
     );
   };
 
@@ -79,7 +77,7 @@ export default function ChatContainer({ conversationId }) {
     );
   }
 
-  const modelPlaceholder = 'Ask Grok AI to find references or ideas...';
+  const modelPlaceholder = "Ask Grok AI to find references or ideas...";
 
   return (
     <div className="flex h-screen bg-gray-950 text-white font-sans overflow-hidden">
@@ -88,9 +86,9 @@ export default function ChatContainer({ conversationId }) {
       </Head>
 
       {/* Sidebar Panel */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         activeId={conversationId}
       />
 
@@ -114,24 +112,32 @@ export default function ChatContainer({ conversationId }) {
             <RiMenuLine className="text-xl" />
           </button>
           <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Refly" width={28} height={28} className="rounded-md object-contain" />
-            <h1 className="font-bold text-lg tracking-wide text-white">Refly</h1>
+            <Image
+              src="/logo.png"
+              alt="Refly"
+              width={28}
+              height={28}
+              className="rounded-md object-contain"
+            />
+            <h1 className="font-bold text-lg tracking-wide text-white">
+              Refly
+            </h1>
           </div>
           <div className="w-8" />
         </header>
 
         {/* Chat Messages / Workspace Area */}
-        <ChatArea 
-          messages={messages} 
-          isLoading={isLoadingMessages} 
+        <ChatArea
+          messages={messages}
+          isLoading={isLoadingMessages}
           activeModel={activeModel}
           onModelChange={setActiveModel}
           onSuggestionClick={handleSuggestionClick}
         />
 
         {/* Input Bar */}
-        <ChatInput 
-          onSubmit={handleSendMessage} 
+        <ChatInput
+          onSubmit={handleSendMessage}
           isLoading={sendMessageMutation.isPending}
           placeholder={modelPlaceholder}
           activeModel={activeModel}

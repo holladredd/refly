@@ -15,6 +15,9 @@ const MediaCard = ({ media }) => {
     author,
     type = 'image',
     license,
+    description,
+    duration,
+    views,
   } = media || {};
 
   // Derive the resource URL — previewUrl for display, url for download/copy
@@ -103,17 +106,34 @@ const MediaCard = ({ media }) => {
         </button>
       </div>
 
-      {/* Info */}
+        {/* Info */}
       <div className="p-3 flex-1 flex flex-col">
-        <h4 className="text-sm font-semibold text-white truncate mb-1" title={title}>
+        <h4 className="text-sm font-semibold text-white line-clamp-2 mb-1" title={title}>
           {title}
         </h4>
-        <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
-          <span className="truncate">{source || 'Unknown Source'}</span>
+
+        {/* AI-generated description */}
+        {description && (
+          <p className="text-xs text-blue-300/80 italic mb-2 line-clamp-2 leading-relaxed">
+            {description}
+          </p>
+        )}
+
+        <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+          <span className="truncate font-medium">{source || 'Unknown Source'}</span>
           {author && <span className="truncate ml-2 text-gray-500">by {author}</span>}
         </div>
+
+        {/* Duration / Views for videos */}
+        {(duration || views) && (
+          <div className="flex gap-3 text-[10px] text-gray-600 mb-2">
+            {duration && <span>⏱ {duration}</span>}
+            {views && <span>👁 {Number(views).toLocaleString()} views</span>}
+          </div>
+        )}
+
         {license && (
-          <p className="text-xs text-gray-500 mb-3 truncate">License: {license}</p>
+          <p className="text-[10px] text-gray-600 mb-2 truncate">📜 {license}</p>
         )}
 
         {/* Actions */}
