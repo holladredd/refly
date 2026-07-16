@@ -16,7 +16,11 @@ export default function ChatContainer({ conversationId }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeModel, setActiveModel] = useState("grok-4.3");
 
-  const { useConversationMessages, useSendMessageMutation, useEditMessageMutation } = useChat();
+  const {
+    useConversationMessages,
+    useSendMessageMutation,
+    useEditMessageMutation,
+  } = useChat();
 
   const { data: messages = [], isLoading: isLoadingMessages } =
     useConversationMessages(conversationId);
@@ -89,7 +93,7 @@ export default function ChatContainer({ conversationId }) {
             confirmButtonColor: "#3b82f6",
           });
         },
-      }
+      },
     );
   };
 

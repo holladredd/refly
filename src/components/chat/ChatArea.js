@@ -1,6 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
 import MediaCard from "./MediaCard";
-import { FiCpu, FiMessageSquare, FiTrendingUp, FiEdit2, FiX, FiCheck } from "react-icons/fi";
+import {
+  FiCpu,
+  FiMessageSquare,
+  FiTrendingUp,
+  FiEdit2,
+  FiX,
+  FiCheck,
+} from "react-icons/fi";
 import Image from "next/image";
 
 const ChatArea = ({
@@ -108,18 +115,21 @@ const ChatArea = ({
               >
                 {/* Username & Edit Actions */}
                 <div className="flex items-center gap-2 mb-1 px-1">
-                  {isUser && editingMessageId !== msg._id && !msg.isLoading && !msg._id.toString().startsWith('temp-') && (
-                    <button
-                      onClick={() => {
-                        setEditingMessageId(msg._id);
-                        setEditContent(msg.content);
-                      }}
-                      className="text-gray-500 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100 p-1"
-                      title="Edit prompt (Deletes subsequent messages)"
-                    >
-                      <FiEdit2 className="text-xs" />
-                    </button>
-                  )}
+                  {isUser &&
+                    editingMessageId !== msg._id &&
+                    !msg.isLoading &&
+                    !msg._id.toString().startsWith("temp-") && (
+                      <button
+                        onClick={() => {
+                          setEditingMessageId(msg._id);
+                          setEditContent(msg.content);
+                        }}
+                        className="text-gray-500 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100 p-1"
+                        title="Edit prompt (Deletes subsequent messages)"
+                      >
+                        <FiEdit2 className="text-xs" />
+                      </button>
+                    )}
                   <span className="text-xs text-gray-500">
                     {isUser ? "You" : "Refly"}
                   </span>
@@ -156,7 +166,10 @@ const ChatArea = ({
                         </button>
                         <button
                           onClick={() => {
-                            if (editContent.trim() && editContent.trim() !== msg.content) {
+                            if (
+                              editContent.trim() &&
+                              editContent.trim() !== msg.content
+                            ) {
                               onEditMessage(msg._id, editContent.trim());
                             }
                             setEditingMessageId(null);
