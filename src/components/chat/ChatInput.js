@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
 
-const ChatInput = ({ onSubmit, isLoading, placeholder }) => {
+const ChatInput = ({ onSubmit, isLoading, placeholder, activeModel, onModelChange }) => {
   const [message, setMessage] = useState('');
 
   const handleSend = (e) => {
@@ -24,6 +24,19 @@ const ChatInput = ({ onSubmit, isLoading, placeholder }) => {
           >
             <FiPaperclip className="text-xl" />
           </button>
+          <div className="absolute -top-10 right-0 flex items-center space-x-2 bg-gray-900 border border-gray-800 rounded-lg p-1 z-10 shadow-sm text-xs text-gray-400">
+            <span>Model:</span>
+            <select
+              disabled={isLoading}
+              className="bg-transparent text-gray-200 outline-none cursor-pointer hover:text-white"
+              value={activeModel || 'grok-2-1212'}
+              onChange={(e) => onModelChange && onModelChange(e.target.value)}
+            >
+              <option value="grok-2-1212">Grok 2 (1212)</option>
+              <option value="grok-2">Grok 2</option>
+              <option value="grok-2-vision-1212">Grok Vision</option>
+            </select>
+          </div>
           
           <input
             type="text"
