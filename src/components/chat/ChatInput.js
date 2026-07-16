@@ -3,8 +3,8 @@ import { FiSend, FiPaperclip, FiChevronDown } from "react-icons/fi";
 import { RiRobot2Line } from "react-icons/ri";
 
 const MODELS = [
-  { value: "grok-4.5", label: "Grok 4.5", badge: "✨" },
   { value: "grok-4", label: "Grok 4.3", badge: "" },
+  { value: "grok-4.5", label: "Grok 4.5", badge: "✨" },
 ];
 
 const ChatInput = ({
@@ -80,7 +80,7 @@ const ChatInput = ({
               <div className="relative flex items-center">
                 <select
                   disabled={isLoading}
-                  value={activeModel || "grok-4.5"}
+                  value={activeModel || "grok-4"}
                   onChange={(e) => onModelChange && onModelChange(e.target.value)}
                   className="appearance-none bg-transparent text-blue-400 font-semibold text-xs pl-1 pr-5 outline-none cursor-pointer hover:text-blue-300 transition-colors disabled:opacity-50"
                 >
