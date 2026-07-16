@@ -111,7 +111,7 @@ const ChatArea = ({
 
               {/* Message Bubble Container */}
               <div
-                className={`flex flex-col max-w-[75%] ${isUser ? "items-end" : "items-start"}`}
+                className={`flex flex-col max-w-[75%] group ${isUser ? "items-end" : "items-start"}`}
               >
                 {/* Username & Edit Actions */}
                 <div className="flex items-center gap-2 mb-1 px-1">
@@ -137,7 +137,7 @@ const ChatArea = ({
 
                 {/* Bubble Body */}
                 <div
-                  className={`relative p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap border group ${
+                  className={`relative p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap border ${
                     isUser
                       ? "bg-blue-600/15 border-blue-500/25 text-blue-50 rounded-tr-none shadow-md shadow-blue-500/5 w-full"
                       : "bg-gray-950/80 border-gray-800/80 text-gray-200 rounded-tl-none shadow-sm"
