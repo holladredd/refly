@@ -134,6 +134,8 @@ export default function ChatContainer({ conversationId }) {
           onSubmit={handleSendMessage} 
           isLoading={sendMessageMutation.isPending}
           placeholder={modelPlaceholder}
+          activeModel={activeModel}
+          onModelChange={setActiveModel}
         />
       </div>
     </div>
