@@ -182,7 +182,6 @@ const ChatArea = ({
                     </div>
                   </div>
                 ) : (
-                  /* ── NORMAL BUBBLE ── */
                   <div
                     className={`relative p-3.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                       isUser
@@ -190,14 +189,21 @@ const ChatArea = ({
                         : "bg-gray-900 border border-gray-800 text-gray-200 rounded-tl-none"
                     }`}
                   >
-                    {msg.isLoading ? (
+                    {msg.isLoading && !msg.content ? (
+                      /* Pure loading state — no text yet */
                       <div className="flex items-center gap-2 text-gray-500">
                         <div className="w-3.5 h-3.5 border-2 border-gray-500 border-t-gray-300 rounded-full animate-spin" />
-                        <span>Generating response...</span>
+                        <span>Thinking...</span>
                       </div>
-                    ) : (
-                      msg.content
-                    )}
+                    ) : msg.content ? (
+                      /* Streaming or complete text */
+                      <span>
+                        {msg.content}
+                        {msg.isLoading && (
+                          <span className="inline-block w-0.5 h-4 bg-gray-400 ml-0.5 animate-pulse align-middle" />
+                        )}
+                      </span>
+                    ) : null}
                   </div>
                 )}
 

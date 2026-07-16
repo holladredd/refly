@@ -49,30 +49,98 @@ export function ChatProvider({ children }) {
     });
   };
 
-  // 4. Send a message mutation with Optimistic Updates
+  // 4. Send a message — STREAMING via SSE
   const useSendMessageMutation = () => {
     return useMutation({
       mutationFn: async ({ conversationId, message, model }) => {
-        const { data } = await api.post("/chat", {
-          conversationId,
-          message,
-          model,
+        const apiBase =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+        const response = await fetch(`${apiBase}/chat/stream`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversationId, message, model }),
         });
-        return data;
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.message || "Failed to send message");
+        }
+
+        // Read SSE stream
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        // We'll build a return object as events arrive
+        let result = { conversationId, userMessage: null, assistantMessage: null };
+
+        // Expose a way to push streaming updates upward — we call the callback stored in a ref
+        const conversationIdToUpdate = conversationId;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop(); // keep incomplete line in buffer
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+
+            if (line.startsWith("event: ")) {
+              // skip — we read the next data line below in the same batch
+              continue;
+            }
+
+            if (line.startsWith("data: ")) {
+              const rawData = line.slice(6);
+              // find the event type from the preceding event line — simpler: parse raw
+              try {
+                const payload = JSON.parse(rawData);
+
+                // Determine event type by shape of payload
+                if (payload.text !== undefined) {
+                  // "chunk" event — append text to streaming AI bubble
+                  queryClient.setQueryData(
+                    ["messages", conversationIdToUpdate],
+                    (old = []) => {
+                      const idx = old.findIndex((m) =>
+                        m._id?.toString().startsWith("temp-ai-")
+                      );
+                      if (idx === -1) return old;
+                      const updated = [...old];
+                      updated[idx] = {
+                        ...updated[idx],
+                        content: (updated[idx].content || "") + payload.text,
+                        isLoading: false,
+                      };
+                      return updated;
+                    }
+                  );
+                } else if (payload.userMessage && payload.assistantMessage) {
+                  // "done" event
+                  result = payload;
+                } else if (payload.conversationId && !payload.userMessage) {
+                  // "conversation" event — new conversation created
+                  result.conversationId = payload.conversationId;
+                }
+              } catch {
+                // ignore parse errors in individual lines
+              }
+            }
+          }
+        }
+
+        return result;
       },
+
       onMutate: async ({ conversationId, message }) => {
-        // Cancel outgoing refetches so they don't overwrite optimistic update
-        await queryClient.cancelQueries({
-          queryKey: ["messages", conversationId],
-        });
+        await queryClient.cancelQueries({ queryKey: ["messages", conversationId] });
+        const previousMessages = queryClient.getQueryData(["messages", conversationId]);
 
-        // Snapshot the previous messages value
-        const previousMessages = queryClient.getQueryData([
-          "messages",
-          conversationId,
-        ]);
-
-        // Optimistically append the user message and a loading AI message
         const tempUserMessage = {
           _id: `temp-user-${Date.now()}`,
           role: "user",
@@ -96,29 +164,28 @@ export function ChatProvider({ children }) {
 
         return { previousMessages, conversationId };
       },
+
       onError: (err, variables, context) => {
-        // Rollback to previous state if error occurs
         if (context?.previousMessages) {
           queryClient.setQueryData(
             ["messages", context.conversationId],
-            context.previousMessages,
+            context.previousMessages
           );
         }
       },
-      onSuccess: (data, variables, context) => {
-        // Replace optimistic message and append AI response
-        queryClient.setQueryData(
-          ["messages", context.conversationId],
-          (old = []) => {
-            // Remove the temp user message and temp AI message
-            const filtered = old.filter(
-              (msg) => !msg._id.toString().startsWith("temp-")
-            );
-            return [...filtered, data.userMessage, data.assistantMessage];
-          },
-        );
 
-        // Invalidate conversations list to update titles/timestamps
+      onSuccess: (data, variables, context) => {
+        const convId = data?.conversationId || context?.conversationId;
+        // Replace temp messages with the real saved messages
+        queryClient.setQueryData(["messages", convId], (old = []) => {
+          const filtered = old.filter(
+            (msg) => !msg._id?.toString().startsWith("temp-")
+          );
+          const newMessages = [];
+          if (data?.userMessage) newMessages.push(data.userMessage);
+          if (data?.assistantMessage) newMessages.push(data.assistantMessage);
+          return [...filtered, ...newMessages];
+        });
         queryClient.invalidateQueries({ queryKey: ["conversations"] });
       },
     });

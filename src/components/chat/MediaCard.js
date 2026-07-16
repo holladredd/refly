@@ -24,6 +24,7 @@ const MediaCard = ({ media }) => {
     type = "image",
     license,
     description,
+    usageTip,
     duration,
     views,
   } = media || {};
@@ -128,8 +129,15 @@ const MediaCard = ({ media }) => {
 
         {/* AI-generated description */}
         {description && (
-          <p className="text-xs text-blue-300/80 italic mb-2 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-gray-400 mb-1 line-clamp-2 leading-relaxed">
             {description}
+          </p>
+        )}
+
+        {/* Content creator usage tip */}
+        {usageTip && (
+          <p className="text-[11px] text-gray-500 italic mb-2 line-clamp-2 leading-relaxed border-l-2 border-gray-600 pl-2">
+            💡 {usageTip}
           </p>
         )}
 
