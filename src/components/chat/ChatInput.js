@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { FiSend, FiPaperclip } from "react-icons/fi";
+import { FiSend, FiPaperclip, FiChevronDown } from "react-icons/fi";
+import { RiRobot2Line } from "react-icons/ri";
+
+const MODELS = [
+  { value: "grok-4.5", label: "Grok 4.5", badge: "✨" },
+  { value: "grok-4", label: "Grok 4.3", badge: "" },
+];
 
 const ChatInput = ({
   onSubmit,
@@ -18,66 +24,86 @@ const ChatInput = ({
     }
   };
 
+  const currentModel = MODELS.find((m) => m.value === activeModel) || MODELS[0];
+
   return (
     <div className="bg-gray-900 p-4 border-t border-gray-800">
-      <div className="max-w-3xl mx-auto relative">
-        <form onSubmit={handleSend} className="relative flex items-center">
-          <button
-            type="button"
-            disabled={isLoading}
-            className="absolute left-3 text-gray-400 hover:text-gray-200 p-2 transition-colors disabled:opacity-50"
-            title="Attach Media"
-          >
-            <FiPaperclip className="text-xl" />
-          </button>
-          <div className="absolute -top-12 right-0 flex items-center bg-gray-950/80 backdrop-blur-md border border-gray-800/80 rounded-full py-1 px-3 z-10 shadow-lg text-xs font-medium tracking-wide">
-            <span className="text-gray-500 mr-2 uppercase text-[10px] tracking-widest font-bold">
-              Model
-            </span>
-            <select
+      <div className="max-w-3xl mx-auto">
+        {/* Input Box */}
+        <form
+          onSubmit={handleSend}
+          className="flex flex-col bg-gray-950 border border-gray-800 rounded-2xl shadow-lg focus-within:border-blue-500/60 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all"
+        >
+          {/* Text Input Row */}
+          <div className="flex items-center px-4 pt-3 pb-2 gap-3">
+            <button
+              type="button"
               disabled={isLoading}
-              className="bg-transparent text-blue-400 font-semibold outline-none cursor-pointer hover:text-blue-300 transition-colors appearance-none pr-4 relative"
-              value={activeModel || 'grok-4.5'}
-              onChange={(e) => onModelChange && onModelChange(e.target.value)}
-              style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2360a5fa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right -0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em" }}
+              className="text-gray-500 hover:text-gray-300 p-1 transition-colors disabled:opacity-40 shrink-0"
+              title="Attach Media"
             >
-              <option value="grok-4.5" className="bg-gray-900 text-gray-200">Grok 4.5 ✨</option>
-              <option value="grok-4" className="bg-gray-900 text-gray-200">Grok 4.3 (Default)</option>
-            </select>
+              <FiPaperclip className="text-lg" />
+            </button>
+
+            <input
+              type="text"
+              disabled={isLoading}
+              className="flex-1 bg-transparent text-white placeholder-gray-500 focus:outline-none text-sm py-1 disabled:opacity-60"
+              placeholder={placeholder || "Ask Refly to find resources or ideas..."}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+
+            <button
+              type="submit"
+              disabled={!message.trim() || isLoading}
+              className={`shrink-0 p-2 rounded-xl transition-all ${
+                message.trim() && !isLoading
+                  ? "bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-500/20"
+                  : "text-gray-600 bg-gray-800/50"
+              }`}
+            >
+              {isLoading ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <FiSend className="text-base" />
+              )}
+            </button>
           </div>
 
-          <input
-            type="text"
-            disabled={isLoading}
-            className="w-full bg-gray-950 text-white placeholder-gray-500 rounded-xl py-4 pl-12 pr-14 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-800 shadow-sm disabled:opacity-60"
-            placeholder={
-              placeholder || "Ask Refly to find resources or ideas..."
-            }
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
+          {/* Bottom Toolbar Row */}
+          <div className="flex items-center justify-between px-4 py-2 border-t border-gray-800/60">
+            {/* Model Selector — inside the input box */}
+            <div className="flex items-center gap-1.5">
+              <RiRobot2Line className="text-sm text-gray-500" />
+              <span className="text-[10px] text-gray-600 uppercase tracking-widest font-bold">Model</span>
+              <div className="relative flex items-center">
+                <select
+                  disabled={isLoading}
+                  value={activeModel || "grok-4.5"}
+                  onChange={(e) => onModelChange && onModelChange(e.target.value)}
+                  className="appearance-none bg-transparent text-blue-400 font-semibold text-xs pl-1 pr-5 outline-none cursor-pointer hover:text-blue-300 transition-colors disabled:opacity-50"
+                >
+                  {MODELS.map((m) => (
+                    <option key={m.value} value={m.value} className="bg-gray-900 text-gray-200">
+                      {m.label} {m.badge}
+                    </option>
+                  ))}
+                </select>
+                <FiChevronDown className="absolute right-0 text-blue-400 text-xs pointer-events-none" />
+              </div>
+              {/* Active model pill badge */}
+              <span className="ml-1 px-1.5 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-[9px] font-bold tracking-wide">
+                {currentModel.label} {currentModel.badge}
+              </span>
+            </div>
 
-          <button
-            type="submit"
-            disabled={!message.trim() || isLoading}
-            className={`absolute right-3 p-2 rounded-lg transition-colors ${
-              message.trim() && !isLoading
-                ? "bg-blue-600 text-white hover:bg-blue-500"
-                : "text-gray-600"
-            }`}
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <FiSend className="text-xl" />
-            )}
-          </button>
+            {/* Disclaimer */}
+            <p className="text-[10px] text-gray-600 hidden sm:block">
+              Refly can make mistakes. Verify license info.
+            </p>
+          </div>
         </form>
-        <div className="text-center mt-2">
-          <p className="text-xs text-gray-600">
-            Refly can make mistakes. Verify important license information.
-          </p>
-        </div>
       </div>
     </div>
   );
