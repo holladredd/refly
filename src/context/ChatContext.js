@@ -72,7 +72,7 @@ export function ChatProvider({ children }) {
           conversationId,
         ]);
 
-        // Optimistically append the user message to the active conversation
+        // Optimistically append the user message and a loading AI message
         const tempUserMessage = {
           _id: `temp-user-${Date.now()}`,
           role: "user",
@@ -80,9 +80,18 @@ export function ChatProvider({ children }) {
           createdAt: new Date().toISOString(),
         };
 
+        const tempAiMessage = {
+          _id: `temp-ai-${Date.now()}`,
+          role: "assistant",
+          content: "",
+          createdAt: new Date().toISOString(),
+          isLoading: true,
+        };
+
         queryClient.setQueryData(["messages", conversationId], (old = []) => [
           ...old,
           tempUserMessage,
+          tempAiMessage,
         ]);
 
         return { previousMessages, conversationId };
@@ -101,9 +110,9 @@ export function ChatProvider({ children }) {
         queryClient.setQueryData(
           ["messages", context.conversationId],
           (old = []) => {
-            // Remove the temp user message and add real ones
+            // Remove the temp user message and temp AI message
             const filtered = old.filter(
-              (msg) => !msg._id.toString().startsWith("temp-user-"),
+              (msg) => !msg._id.toString().startsWith("temp-")
             );
             return [...filtered, data.userMessage, data.assistantMessage];
           },
