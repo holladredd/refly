@@ -82,7 +82,7 @@ const MediaCard = ({ media }) => {
     }[type] || FiImage;
 
   return (
-    <div className="bg-gray-700 rounded-xl overflow-hidden border border-gray-600 shadow-md hover:shadow-lg hover:border-gray-500 transition-all group flex flex-col">
+    <div className="bg-gray-800/60 rounded-xl overflow-hidden border border-gray-700/60 hover:border-gray-600 transition-all group flex flex-col">
       {/* Thumbnail / Preview */}
       <div className="relative h-36 bg-gray-800 overflow-hidden">
         {thumbnail ? (
@@ -109,8 +109,8 @@ const MediaCard = ({ media }) => {
           title={saved ? "Saved" : "Save"}
           className={`absolute top-2 right-2 p-1.5 rounded-full backdrop-blur-sm transition-colors ${
             saved
-              ? "bg-blue-600 text-white"
-              : "bg-black/60 text-white hover:bg-blue-600"
+              ? "bg-gray-600 text-white"
+              : "bg-black/60 text-gray-300 hover:bg-gray-600"
           }`}
         >
           <FiBookmark className={`text-sm ${saved ? "fill-white" : ""}`} />
