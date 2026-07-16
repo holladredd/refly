@@ -167,7 +167,7 @@ export default function ChatContainer({ conversationId }) {
         {/* Input Bar */}
         <ChatInput
           onSubmit={handleSendMessage}
-          isLoading={sendMessageMutation.isPending}
+          isLoading={sendMessageMutation.isPending || editMessageMutation.isPending}
           placeholder={modelPlaceholder}
           activeModel={activeModel}
           onModelChange={setActiveModel}

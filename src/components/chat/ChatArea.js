@@ -138,7 +138,9 @@ const ChatArea = ({
                 {/* Bubble Body */}
                 <div
                   className={`relative p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap border ${
-                    isUser
+                    isUser && editingMessageId === msg._id
+                      ? "bg-transparent border-transparent text-gray-200 w-full p-0"
+                      : isUser
                       ? "bg-blue-600/15 border-blue-500/25 text-blue-50 rounded-tr-none shadow-md shadow-blue-500/5 w-full"
                       : "bg-gray-950/80 border-gray-800/80 text-gray-200 rounded-tl-none shadow-sm"
                   }`}
@@ -153,14 +155,14 @@ const ChatArea = ({
                       <textarea
                         value={editContent}
                         onChange={(e) => setEditContent(e.target.value)}
-                        className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500 min-h-[100px] resize-y"
+                        className="w-full bg-gray-800/30 text-white rounded-lg p-3 text-sm focus:outline-none focus:bg-gray-800/60 transition-colors min-h-[100px] resize-y"
                         placeholder="Edit your prompt..."
                         autoFocus
                       />
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setEditingMessageId(null)}
-                          className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-gray-200 bg-gray-800 hover:bg-gray-700 rounded-md transition-colors"
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-gray-200 bg-transparent hover:bg-gray-800/50 rounded-md transition-colors"
                         >
                           <FiX /> Cancel
                         </button>
@@ -175,7 +177,7 @@ const ChatArea = ({
                             setEditingMessageId(null);
                           }}
                           disabled={!editContent.trim()}
-                          className="flex items-center gap-1 px-3 py-1.5 text-xs text-white bg-blue-600 hover:bg-blue-500 rounded-md transition-colors disabled:opacity-50"
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-200 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors disabled:opacity-50"
                         >
                           <FiCheck /> Save & Resend
                         </button>
