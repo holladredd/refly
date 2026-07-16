@@ -22,8 +22,9 @@ const Sidebar = ({ isOpen, onClose, activeId }) => {
   const deleteMutation = useDeleteConversationMutation();
 
   const handleNewChat = () => {
-    if (router.asPath === '/chat' || router.pathname === '/chat') {
-      router.reload();
+    if (router.pathname === '/chat' && !router.query.id) {
+      // Force a soft remount without a hard browser reload
+      router.push({ pathname: '/chat', query: { t: Date.now() } });
     } else {
       router.push('/chat');
     }
