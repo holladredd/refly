@@ -14,7 +14,7 @@ export default function ChatContainer({ conversationId }) {
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeModel, setActiveModel] = useState("grok-2-1212");
+  const [activeModel, setActiveModel] = useState('grok-4.5');
 
   const { useConversationMessages, useSendMessageMutation } = useChat();
 

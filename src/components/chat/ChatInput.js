@@ -37,28 +37,13 @@ const ChatInput = ({
             <select
               disabled={isLoading}
               className="bg-transparent text-blue-400 font-semibold outline-none cursor-pointer hover:text-blue-300 transition-colors appearance-none pr-4 relative"
-              value={activeModel || "grok-2-1212"}
+              value={activeModel || 'grok-4.5'}
               onChange={(e) => onModelChange && onModelChange(e.target.value)}
-              style={{
-                backgroundImage:
-                  "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2360a5fa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
-                backgroundPosition: "right -0.5rem center",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "1.5em 1.5em",
-              }}
+              style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2360a5fa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right -0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em" }}
             >
-              <option value="grok-2-1212" className="bg-gray-900 text-gray-200">
-                Grok 2 (1212)
-              </option>
-              <option value="grok-2" className="bg-gray-900 text-gray-200">
-                Grok 2
-              </option>
-              <option
-                value="grok-2-vision-1212"
-                className="bg-gray-900 text-gray-200"
-              >
-                Grok Vision
-              </option>
+              <option value="grok-4.5" className="bg-gray-900 text-gray-200">Grok 4.5 ✨</option>
+              <option value="grok-4" className="bg-gray-900 text-gray-200">Grok 4.3</option>
+              <option value="grok-2" className="bg-gray-900 text-gray-200">Grok 2</option>
             </select>
           </div>
 
