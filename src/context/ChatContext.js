@@ -56,10 +56,15 @@ export function ChatProvider({ children }) {
         const apiBase =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
+        const token = typeof window !== 'undefined' ? localStorage.getItem('refly_token') : null;
+
         const response = await fetch(`${apiBase}/chat/stream`, {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify({ conversationId, message, model }),
         });
 
@@ -87,23 +92,26 @@ export function ChatProvider({ children }) {
           const lines = buffer.split("\n");
           buffer = lines.pop(); // keep incomplete line in buffer
 
+          let currentEvent = null;
+
           for (const line of lines) {
-            if (!line.trim()) continue;
+            if (!line.trim()) {
+              currentEvent = null; // blank line resets event
+              continue;
+            }
 
             if (line.startsWith("event: ")) {
-              // skip — we read the next data line below in the same batch
+              currentEvent = line.slice(7).trim();
               continue;
             }
 
             if (line.startsWith("data: ")) {
               const rawData = line.slice(6);
-              // find the event type from the preceding event line — simpler: parse raw
               try {
                 const payload = JSON.parse(rawData);
 
-                // Determine event type by shape of payload
-                if (payload.text !== undefined) {
-                  // "chunk" event — append text to streaming AI bubble
+                if (currentEvent === "chunk" || payload.text !== undefined) {
+                  // Streaming text chunk — append to temp AI bubble
                   queryClient.setQueryData(
                     ["messages", conversationIdToUpdate],
                     (old = []) => {
@@ -115,20 +123,19 @@ export function ChatProvider({ children }) {
                       updated[idx] = {
                         ...updated[idx],
                         content: (updated[idx].content || "") + payload.text,
-                        isLoading: false,
+                        isLoading: true, // still streaming
                       };
                       return updated;
                     }
                   );
-                } else if (payload.userMessage && payload.assistantMessage) {
-                  // "done" event
+                } else if (currentEvent === "done" || (payload.userMessage && payload.assistantMessage)) {
                   result = payload;
-                } else if (payload.conversationId && !payload.userMessage) {
-                  // "conversation" event — new conversation created
+                } else if (currentEvent === "conversation" || (payload.conversationId && !payload.userMessage)) {
                   result.conversationId = payload.conversationId;
                 }
+                // "status" events are informational — ignored in UI for now
               } catch {
-                // ignore parse errors in individual lines
+                // ignore malformed lines
               }
             }
           }

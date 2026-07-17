@@ -8,4 +8,14 @@ const api = axios.create({
   },
 });
 
+// Attach stored JWT token as Bearer header on every request
+// This is the cross-domain fallback for when cookies are blocked (e.g. Render + Vercel)
+api.interceptors.request.use((config) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('refly_token') : null;
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export default api;

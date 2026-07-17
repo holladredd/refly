@@ -14,6 +14,10 @@ const useAuthStore = create((set) => ({
     try {
       set({ isLoading: true });
       const { data } = await api.post('/auth/login', { email, password });
+      // Persist token for cross-domain Bearer auth fallback
+      if (data.token && typeof window !== 'undefined') {
+        localStorage.setItem('refly_token', data.token);
+      }
       set({ user: data, isLoading: false });
       return true;
     } catch (error) {
@@ -43,6 +47,10 @@ const useAuthStore = create((set) => ({
     try {
       set({ isLoading: true });
       const { data } = await api.post('/auth/register', { name, email, password });
+      // Persist token for cross-domain Bearer auth fallback
+      if (data.token && typeof window !== 'undefined') {
+        localStorage.setItem('refly_token', data.token);
+      }
       set({ user: data, isLoading: false });
       return true;
     } catch (error) {
@@ -71,9 +79,12 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     try {
       await api.post('/auth/logout');
+      if (typeof window !== 'undefined') localStorage.removeItem('refly_token');
       set({ user: null });
     } catch (error) {
       console.error('Logout error:', error);
+      if (typeof window !== 'undefined') localStorage.removeItem('refly_token');
+      set({ user: null });
     }
   },
 
