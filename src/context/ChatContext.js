@@ -92,26 +92,23 @@ export function ChatProvider({ children }) {
           const lines = buffer.split("\n");
           buffer = lines.pop(); // keep incomplete line in buffer
 
-          let currentEvent = null;
-
           for (const line of lines) {
-            if (!line.trim()) {
-              currentEvent = null; // blank line resets event
-              continue;
-            }
+            if (!line.trim()) continue;
 
             if (line.startsWith("event: ")) {
-              currentEvent = line.slice(7).trim();
+              // skip — we read the next data line below in the same batch
               continue;
             }
 
             if (line.startsWith("data: ")) {
               const rawData = line.slice(6);
+              // find the event type from the preceding event line — simpler: parse raw
               try {
                 const payload = JSON.parse(rawData);
 
-                if (currentEvent === "chunk" || payload.text !== undefined) {
-                  // Streaming text chunk — append to temp AI bubble
+                // Determine event type by shape of payload
+                if (payload.text !== undefined) {
+                  // "chunk" event — append text to streaming AI bubble
                   queryClient.setQueryData(
                     ["messages", conversationIdToUpdate],
                     (old = []) => {
@@ -123,19 +120,20 @@ export function ChatProvider({ children }) {
                       updated[idx] = {
                         ...updated[idx],
                         content: (updated[idx].content || "") + payload.text,
-                        isLoading: true, // still streaming
+                        isLoading: false,
                       };
                       return updated;
                     }
                   );
-                } else if (currentEvent === "done" || (payload.userMessage && payload.assistantMessage)) {
+                } else if (payload.userMessage && payload.assistantMessage) {
+                  // "done" event
                   result = payload;
-                } else if (currentEvent === "conversation" || (payload.conversationId && !payload.userMessage)) {
+                } else if (payload.conversationId && !payload.userMessage) {
+                  // "conversation" event — new conversation created
                   result.conversationId = payload.conversationId;
                 }
-                // "status" events are informational — ignored in UI for now
               } catch {
-                // ignore malformed lines
+                // ignore parse errors in individual lines
               }
             }
           }
